@@ -30,7 +30,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
   final realController = TextEditingController();
   final dolarController = TextEditingController();
   final euroController = TextEditingController();
@@ -38,17 +37,40 @@ class _HomeState extends State<Home> {
   double dolar;
   double euro;
 
-  void _realChanged(String text){
-    print(text);
-
+  void _realChanged(String text) {
+    if (text.isEmpty) {
+      _clearAll();
+      return;
+    }
+    double real = double.parse(text);
+    dolarController.text = (real / dolar).toStringAsFixed(2);
+    euroController.text = (real / euro).toStringAsFixed(2);
   }
-  void _dolarChanged(String text){
-    print(text);
 
+  void _dolarChanged(String text) {
+    if (text.isEmpty) {
+      _clearAll();
+      return;
+    }
+    double dolar = double.parse(text);
+    realController.text = (dolar * this.dolar).toStringAsFixed(2);
+    euroController.text = ((dolar * this.dolar) / euro).toStringAsFixed(2);
   }
-  void _euroChanged(String text){
-    print(text);
 
+  void _euroChanged(String text) {
+    if (text.isEmpty) {
+      _clearAll();
+      return;
+    }
+    double euro = double.parse(text);
+    realController.text = (euro * this.euro).toStringAsFixed(2);
+    dolarController.text = ((euro * this.euro) / dolar).toStringAsFixed(2);
+  }
+
+  void _clearAll() {
+    realController.text = '';
+    dolarController.text = '';
+    euroController.text = '';
   }
 
   @override
@@ -95,27 +117,32 @@ class _HomeState extends State<Home> {
                         size: 150.0,
                         color: Colors.amber,
                       ),
-                      buildTextField('Reais', 'R\$', realController, _realChanged),
+                      buildTextField(
+                          'Reais', 'R\$', realController, _realChanged),
                       Divider(),
-                      buildTextField('Dólares', '\$', dolarController, _dolarChanged),
+                      buildTextField(
+                          'Dólares', '\$', dolarController, _dolarChanged),
                       Divider(),
-                      buildTextField('Euros', '€', euroController, _euroChanged),
+                      buildTextField(
+                          'Euros', '€', euroController, _euroChanged),
                     ],
                   ),
                 );
               }
           }
+          return Container();
         },
       ),
     );
   }
 }
 
-Widget buildTextField(String label, String prefix, TextEditingController c, Function f) {
+Widget buildTextField(
+    String label, String prefix, TextEditingController c, Function f) {
   return TextField(
     controller: c,
     onChanged: f,
-    keyboardType: TextInputType.number,
+    keyboardType: TextInputType.numberWithOptions(decimal: true),
     decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(color: Colors.amber),
